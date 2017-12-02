@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<body>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+
+    <h1>Create a new restaurant</h1>
+    <input type="text" ng-model="restaurant.name" placeholder="name">
+
+    <div>
+        <p> English</p>
+        <input type="text" ng-model="restaurant.en.info" placeholder="info">
+        <p> French </p>
+        <input type="text" ng-model="restaurant.fr.info" placeholder="info">
+    </div>
+
+    <div >Address
+    <input type="text" ng-model="restaurant.address.street" placeholder="street">
+    <input type="text" ng-model="restaurant.address.PC" placeholder="postal code">
+    <input type="text" ng-model="restaurant.address.city" placeholder="city">
+    </div>
+
+    <div >Menu
+        <input type="text" ng-model="restaurant.menu.number" placeholder="number">
+        <input type="file" id="menuFile" name="menuFile"/>
+        <button ng-click="addPictureMenu()">Add</button>
+
+        <div>
+            English
+            <input type="text" ng-model="menu.en.name" placeholder="name">
+            <input type="text" ng-model="menu.en.info" placeholder="info">
+            <input type="text" ng-model="menu.en.desc" placeholder="description">
+            <p>
+                <input type="text" ng-model="enIn" placeholder="ingredient">
+                <button ng-click="addInEN()">add</button>
+            </p>
+            <p>
+                <input type="text" ng-model="enTag" placeholder="tag">
+                <button ng-click="addTagEN()">add</button>
+            </p>
+            <p>
+                <input type="text" ng-model="enCat" placeholder="category">
+                <button ng-click="addCatEN()">add</button>
+            </p>
+        </div>
+
+        <div>
+            French
+            <input type="text" ng-model="menu.fr.name" placeholder="name">
+            <input type="text" ng-model="menu.fr.info" placeholder="info">
+            <input type="text" ng-model="menu.fr.desc" placeholder="description">
+            <p>
+                <input type="text" ng-model="frIn" placeholder="ingredient">
+                <button ng-click="addInFR()">add</button>
+            </p>
+            <p>
+                <input type="text" ng-model="frTag" placeholder="tag">
+                <button ng-click="addTagFR()">add</button>
+            </p>
+            <p>
+                <input type="text" ng-model="frCat" placeholder="category">
+                <button ng-click="addCatFR()">add</button>
+            </p>
+        </div>
+        <p>
+            <button ng-click="addMenuItem()">addMenuItem</button>
+        </p>
+    </div>
+
+    <input type="file" id="file" name="file"/>
+    <button ng-click="addPicture()">Add</button>
+
+    <button ng-click="submit()">submit</button>
+</div>
+
+
+<script>
+    var app = angular.module('myApp', []);
+
+    app.controller('myCtrl', function($scope, $http)
+    {
+        //clearRestaurantForm();
+        //clearMenuForm();
+        $scope.path = "http://localhost:1234";
+        $scope.restaurant = {};
+
+
+        $scope.addPicture = function() {
+            var f = document.getElementById('file').files[0],
+                r = new FileReader();
+
+            r.onloadend = function(e) {
+                var data = e.target.result;
+                $scope.restaurant.images.push(data);
+                console.log("image added");
+            };
+            r.readAsArrayBuffer(f);
+        };
+
+        $scope.addPictureMenu = function() {
+            var f = document.getElementById('menuFile').files[0],
+                r = new FileReader();
+
+            r.onloadend = function(e) {
+                var data = e.target.result;
+                $scope.restaurant.menu.image = data;
+            };
+            r.readAsArrayBuffer(f);
+        };
+
+        $scope.menu = {};
+        $scope.addMenuItem = function()
+        {
+            $scope.restaurant.menu.push($scope.menu);
+            console.log("menu item added");
+            //clearMenuForm();
+        };
+
+        $scope.submit= function()
+        {
+            console.log("submit");
+            console.log($scope.restaurant);
+            var res = $http.post($scope.path +'/restaurants/addRestaurant', $scope.restaurant);
+
+            res.then(function (data, status, headers, config) {
+                    console.log(data);
+                    //clearRestaurantForm();
+                });
+                res.catch(function (data, status, header, config) {
+                    console.log("error");
+                });
+        };
+
+        $scope.getAllRestaurants = function()
+        {
+
+        };
+
+
+            $scope.restaurant = {};
+            $scope.restaurant.address = {};
+            $scope.restaurant.en = {};
+            $scope.restaurant.fr = {};
+            $scope.restaurant.images = [];
+            $scope.restaurant.menu = [];
+
+
+            $scope.menu = {};
+            $scope.menu.en = {};
+            $scope.menu.fr = {};
+            $scope.menu.en.ingredients = [];
+            $scope.menu.en.tags = [];
+            $scope.menu.en.category = [];
+            $scope.menu.fr.ingredients = [];
+            $scope.menu.fr.tags = [];
+            $scope.menu.fr.category = [];
+
+
+        $scope.addInEN = function()
+        {
+            if($scope.enIn.length > 0)$scope.menu.en.ingredients.push($scope.enIn);
+            $scope.enIn = "";
+            console.log("ingredient added");
+        };
+
+        $scope.addTagEN = function()
+        {
+            if($scope.enTag.length > 0)$scope.menu.en.tags.push($scope.enTag);
+            $scope.enTag = "";
+            console.log("tag added");
+        };
+
+        $scope.addCatEN = function()
+        {
+            if($scope.enCat.length > 0)$scope.menu.en.category.push($scope.enCat);
+            $scope.enCat = "";
+
+            console.log("category added");
+        };
+
+        $scope.addInFR = function()
+        {
+            if($scope.frIn.length > 0)$scope.menu.fr.ingredients.push($scope.frIn);
+            $scope.frIn = "";
+            console.log("ingredient added");
+        };
+
+
+        $scope.addTagFR = function()
+        {
+            if($scope.frTag.length > 0)$scope.menu.fr.tags.push($scope.frTag);
+            $scope.frTag = "";
+            console.log("tag added");
+        };
+
+        $scope.addCatFR = function()
+        {
+            if($scope.frCat.length > 0)$scope.menu.fr.category.push($scope.frCat);
+            $scope.frCat = "";
+            console.log("category added");
+        };
+    });
+</script>
+
+</body>
+</html>

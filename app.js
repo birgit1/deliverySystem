@@ -10,10 +10,11 @@ var mongoose = require('mongoose');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var restaurants = require('./routes/restaurants');
+var dataAdmin = require('./routes/dataAdmin');
 
 // connect to mongodb
 try {
-    var mongoosePromise = mongoose.connect('mongodb://localhost/todo-api', {
+    var mongoosePromise = mongoose.connect('mongodb://localhost/delivery1', {
         useMongoClient: true
     });
 }
@@ -40,6 +41,7 @@ app.use(cors());
 app.use('/', index);
 app.use('/users', users);
 app.use('/restaurants', restaurants);
+app.use('/dataAdmin', dataAdmin);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
