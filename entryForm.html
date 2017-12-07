@@ -23,7 +23,7 @@
 
     <div >Menu
         <input type="text" ng-model="restaurant.menu.number" placeholder="number">
-        <input type="file" id="menuFile" name="menuFile"/>
+        <input type="file" id="menuFile" name="menuFile" />
         <button ng-click="addPictureMenu()">Add</button>
 
         <div>
@@ -68,8 +68,14 @@
         </p>
     </div>
 
-    <input type="file" id="file" name="file"/>
+    <input type="file" id="file" name="file" />
     <button ng-click="addPicture()">Add</button>
+
+
+
+    <input type="file" accept="image/*" onchange="angular.element(this).scope().loadFile(event)">
+    <img id="image"/>
+
 
     <button ng-click="submit()">submit</button>
 </div>
@@ -80,19 +86,47 @@
 
     app.controller('myCtrl', function($scope, $http)
     {
-        //clearRestaurantForm();
-        //clearMenuForm();
+        //
         $scope.path = "http://localhost:1234";
-        $scope.restaurant = {};
+        $scope.restaurant = clearRestaurantForm($scope.restaurant);
+        /*$scope.restaurant.address = {};
+        $scope.restaurant.en = {};
+        $scope.restaurant.fr = {};
+        $scope.restaurant.images = [];
+        $scope.restaurant.menu = [];*/
+        $scope.menu = {}; //clearMenuForm($scope.menu);
+        $scope.menu.en = {};
+        $scope.menu.fr = {};
+        $scope.menu.en.ingredients = [];
+        $scope.menu.en.tags = [];
+        $scope.menu.en.category = [];
+        $scope.menu.fr.ingredients = [];
+        $scope.menu.fr.tags = [];
+        $scope.menu.fr.category = [];
 
+        console.log($scope.restaurant);
 
-        $scope.addPicture = function() {
+        /*$scope.loadFile = function(event) {
+            var output = document.getElementById('output');
+            console.log(event.target.files[0]);
+            console.log(event);
+            var image = event.target.files[0];
+            output.src = URL.createObjectURL(event.target.files[0]);
+            var istring = btoa( image );
+            $scope.restaurant.name = "testImageRestaurant";
+            $scope.restaurant.images = istring;
+            $scope.submit();
+        };*/
+
+        $scope.addPicture = function()
+        {
             var f = document.getElementById('file').files[0],
                 r = new FileReader();
 
             r.onloadend = function(e) {
                 var data = e.target.result;
-                $scope.restaurant.images.push(data);
+                $scope.restaurant.images.push(arrayBufferToBase64(data));
+
                 console.log("image added");
             };
             r.readAsArrayBuffer(f);
@@ -104,9 +138,11 @@
 
             r.onloadend = function(e) {
                 var data = e.target.result;
-                $scope.restaurant.menu.image = data;
+                //document.getElementById("image").src = "data:image/jpg;base64,"+$scope.restaurant.images;
+                $scope.menu.image = arrayBufferToBase64(data);
             };
             r.readAsArrayBuffer(f);
+            console.log("food image added");
         };
 
         $scope.menu = {};
@@ -114,7 +150,7 @@
         {
             $scope.restaurant.menu.push($scope.menu);
             console.log("menu item added");
-            //clearMenuForm();
+            $scope.menu = clearMenuForm($scope.menu);
         };
 
         $scope.submit= function()
@@ -125,7 +161,7 @@
 
             res.then(function (data, status, headers, config) {
                     console.log(data);
-                    //clearRestaurantForm();
+                    $scope.restaurant = clearRestaurantForm($scope.restaurant);
                 });
                 res.catch(function (data, status, header, config) {
                     console.log("error");
@@ -137,30 +173,60 @@
 
         };
 
-
-            $scope.restaurant = {};
-            $scope.restaurant.address = {};
+        function clearRestaurantForm(scopeRest)
+        {
+            var restaurant = {};
+            /*$scope.restaurant.address = {};
             $scope.restaurant.en = {};
             $scope.restaurant.fr = {};
             $scope.restaurant.images = [];
-            $scope.restaurant.menu = [];
+            $scope.restaurant.menu = [];*/
+            restaurant.address = {};
+            restaurant.en = {};
+            restaurant.fr = {};
+            restaurant.images = [];
+            restaurant.menu = [];
+            scopeRest = restaurant;
+            return scopeRest;
+        }
 
-
-            $scope.menu = {};
-            $scope.menu.en = {};
+        function clearMenuForm(scopeMenu)
+        {
+            var menu = {};
+            /*$scope.menu.en = {};
             $scope.menu.fr = {};
             $scope.menu.en.ingredients = [];
             $scope.menu.en.tags = [];
             $scope.menu.en.category = [];
             $scope.menu.fr.ingredients = [];
             $scope.menu.fr.tags = [];
-            $scope.menu.fr.category = [];
+            $scope.menu.fr.category = [];*/
+            menu.en = {};
+            menu.fr = {};
+            menu.en.ingredients = [];
+            menu.en.tags = [];
+            menu.en.category = [];
+            menu.fr.ingredients = [];
+            menu.fr.tags = [];
+            menu.fr.category = [];
+            console.log("MEUN");
+            console.log(menu);
+            scopeMenu = menu;
+            return scopeMenu;
+        }
 
 
         $scope.addInEN = function()
         {
-            if($scope.enIn.length > 0)$scope.menu.en.ingredients.push($scope.enIn);
-            $scope.enIn = "";
+            console.log($scope.enIn);
+            //if($scope.enIn.length > 0)$scope.menu.en.ingredients.push($scope.enIn);
+            //$scope.enIn = "";
+            console.log($scope.menu);
+            if($scope.menu.en === null)
+                $scope.menu.en = {};
+            console.log($scope.menu.en);
+            $scope.menu.en.ingrediets = [];
+            $scope.menu.en.ingredients.push("hello");
             console.log("ingredient added");
         };
 
@@ -200,6 +266,16 @@
             $scope.frCat = "";
             console.log("category added");
         };
+
+        function arrayBufferToBase64( buffer ) {
+            var binary = '';
+            var bytes = new Uint8Array( buffer );
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode( bytes[ i ] );
+            }
+            return window.btoa( binary );
+        }
     });
 </script>
 

@@ -8,7 +8,7 @@ var restaurantSchema = new mongoose.Schema({
     openingHours: [ {day: Number , hours:{from: Date, to: Date}}],
     menu: [{
         number: String,
-        image: Buffer,
+        image: String,
         updatedAt: {type: Date, default: Date.now},
         en:{
             name: String,
@@ -25,7 +25,7 @@ var restaurantSchema = new mongoose.Schema({
             tags: [String],
             category: [String]}
     }],
-    images: [Buffer],
+    images: [String],
     updatedAt: {type: Date, default: Date.now}
 });
 

@@ -3,7 +3,6 @@ var router = express.Router();
 
 var mongoose = require('mongoose');
 var Restaurants = require('../models/restaurant.js');
-var RestaurantsTRL = require('../models/restaurantTRL.js');
 
 
 router.get('/create', function(req, res, next)

@@ -2,8 +2,11 @@ var express = require('express');
 var router = express.Router();
 
 var mongoose = require('mongoose');
+var fs = require('fs');
 var Restaurants = require('../models/restaurant.js');
-var RestaurantsTRL = require('../models/restaurantTRL.js');
+
+
+
 
 /* GET  listing. */
 /*router.get('/', function(req, res, next)
@@ -28,55 +31,38 @@ var RestaurantsTRL = require('../models/restaurantTRL.js');
 
 });*/
 
+router.get('/storeImg', function(req, res, next)
+{
+    var img = {};
+    img.data = fs.readFileSync('nz.jpg');
+    img.contentType = 'image/jpg';
+    Restaurants.create({
+        "name": "French R",
+        "images": img.data
+    },
+        function(err, created) {
+            console.log(created);
+        }
+    );
+});
+
 // get all restaurants
 router.get('/getAllRestaurants', function(req, res, next)
 {
-    var languageOption = 'fr';
+    var language = req.params.language;
 
-        if(languageOption === 'fr')
-        {
-            Restaurants.aggregate([
-                { $lookup:
-                    {
-                        from: 'restaurantTRL',
-                        localField: '_id',
-                        foreignField: 'rid',
-                        as: 'translation'
-                    }
-                }
-            ], function(err, dataTrans) {
-                if (err) throw err;
-                console.log(dataTrans);
-
-                var resData = [];
-                for(var i=0; i<dataTrans.length; i++)
-                {
-                    resData[i] = {};
-                    if(dataTrans[i].translation.name !== null || dataTrans[i].translation.name.length >= 1)
-                        resData[i].name = dataTrans[i].translation.name;
-                    else
-                        resData[i].name = dataTrans[i].name;
-                    resData[i].address = dataTrans[i].address;
-                    if(dataTrans[i].translation.info !== null || dataTrans[i].translation.info.length >= 1)
-                        resData[i].info = dataTrans[i].translation.info;
-                    else
-                        resData[i].info = dataTrans[i].info;
-                    resData[i].openingHours = dataTrans[i].openingHours;
-                    resData[i].pictures = dataTrans[i].pictures;
-                }
-
-                res.send(resData);
-            });
-
-            }
-        else {
-            Restaurants.find({}, {menu: 0, updatedAt: 0}, function (err, data) {
-                if (err) {
-                    return next(err);
-                }
-                res.send(data);
-            });
+    Restaurants.find(function(err, data)
+    {
+        if(err) {
+            return next(err);
         }
+        var result = [];
+        for(var i=0; i<data.length; i++)
+        {
+            languageRestaurant(language)
+        }
+        res.send(result);
+    });
 });
 
 /*
@@ -98,10 +84,6 @@ router.get('/getAllRestaurants', function(req, res, next)
  pictures: [Buffer],
  */
 
-router.get('/createFrenchRestaurant', function(req, res, next)
-{
-    Restaurants.cre
-});
 
 // get all restaurants
 router.get('/getAll', function(req, res, next)
@@ -111,55 +93,56 @@ router.get('/getAll', function(req, res, next)
        if(err) {
            return next(err);
        }
+       for(var i=0; i<data.menu.length; i++)
+       {
+           data.menu[i].image = null;
+       }
        res.send(data);
    });
 });
 
-// get all restaurants
-router.get('/getAll_fr', function(req, res, next)
-{
-    Restaurants.find(function(err, data)
-    {
-        if(err) {
-            return next(err);
-        }
-        RestaurantsTRL.find(function(err, dataFr)
-        {
-            if(err)
-            {
-                return next(err);
-            }
-        })
-        res.send(data);
-    });
-});
 
 // get all the tags for food (e.g. vegan, vegetarian, ..)
 router.get('/tags', function(req, res, next)
 {
-    console.log("food tags: ");
-    var tags = [];
-
     Restaurants.find( function(err, data)
     {
         if(err) {
             return next(err);
         }
-        console.log("db success: ");
-        console.log(data);
-
-        for(var i=0; i<data.length; i++)
-        {
-            for(var k=0; k<data[i].menu.length; k++)
-            {
-                for (var j = 0; j < data[i].menu[k].tags.length; j++)
-                    if (!contains(tags, data[i].menu[k].tags[j]))
-                        tags.push(data[i].menu[k].tags[j]);
-            }
-        }
-        res.json(tags);
+        var tags = scanTags(data, req.params.language);
+        console.log(tags);
+        if(tags !== null)
+            res.json(tags);
+        else
+            res.json("NA");
     });
 });
+
+function scanTags(data, language)
+{
+    var tags = [];
+    for(var i=0; i<data.length; i++)
+    {
+        for(var k=0; k<data[i].menu.length; k++)
+        {
+            if(language === 'fr'){
+                for (var j = 0; j < data[i].menu[k].fr.tags.length; j++) {
+                    if (!contains(tags, data[i].menu[k].fr.tags[j]))
+                        tags.push(data[i].menu[k].fr.tags[j]);
+                }
+            }
+            else {
+                for (var j = 0; j < data[i].menu[k].en.tags.length; j++) {
+                    if (!contains(tags, data[i].menu[k].en.tags[j])) {
+                        tags.push(data[i].menu[k].en.tags[j]);
+                    }
+                }
+            }
+        }
+    }
+    return tags;
+}
 
 function contains(arr, element) {
     for (var i = 0; i < arr.length; i++) {
@@ -170,15 +153,41 @@ function contains(arr, element) {
     return false;
 }
 
+function languageMenu(data, language)
+{
+    var menu = {};
+}
+
+function languageRestaurant(data, language)
+{
+    var restaurant = {};
+    restaurant.name = data[i].name;
+    restaurant.images = data[i].images;
+    restaurant.address = data[i].address;
+    restaurant.openingHours = data[i].openingHours;
+    if(language === 'fr')
+        restaurant.info = data[i].fr.info;
+    else
+        restaurant.info = data[i].en.info;
+    return restaurant;
+}
+
+
 router.post('/addRestaurant', function(req, res, next)
 {
     console.log("add restaurant");
     console.log(req.body);
-    /*Restaurants.create(req.body, function (err, post) {
-        if(err) return next(err);
+    console.log(req.body.name);
+
+    Restaurants.create(req.body, function (err, post)
+    {
+        if(err) {
+            console.log("error adding restaurant");
+            return next(err);
+        }
+        console.log("restaurant created");
         res.json(post);
-    })*/
-    res.json("got it");
+    });
 });
 
 //**  ***********************************************************  **/

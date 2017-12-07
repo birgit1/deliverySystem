@@ -1,0 +1,55 @@
+<!-- 5a289f2270ba6238247b878a -->
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<body>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+
+
+    <button ng-click="tags()">Add</button>
+
+
+
+    <!--<input type="file" accept="image/*" onchange="angular.element(this).scope().loadFile(event)">-->
+    <img id="image"/>
+
+
+</div>
+
+
+<script>
+    var app = angular.module('myApp', []);
+
+    app.controller('myCtrl', function($scope, $http)
+    {
+        $scope.restaurant = {};
+        $scope.addPicture = function()
+        {
+            $http.get("http://localhost:1234/restaurants/5a289f2270ba6238247b878a")
+                .then(function(response) {
+                    $scope.restaurant = response.data;
+                    console.log(response.data);
+                    document.getElementById("image").src = "data:image/jpg;base64," + $scope.restaurant.images.data;
+                });
+
+
+        };
+
+        $scope.tags = function()
+        {
+            $http({
+                url: "http://localhost:1234/restaurants/tags",
+                method: "GET",
+                params: {language: 'en'}
+            }).
+                then(function(response)
+            {
+                console.log(response.data);
+            })
+        }
+    });
+</script>
+
+</body>
+</html>
