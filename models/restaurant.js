@@ -5,7 +5,11 @@ var restaurantSchema = new mongoose.Schema({
     address: {street: String, postalCode: String, city:String},
     en: {info: String},
     fr: {info: String},
-    openingHours: [ {day: Number , hours:{from: Date, to: Date}}],
+    openingHours: [{
+        weekday: String,
+        start: Number,
+        end: Number
+    }],
     menu: [{
         number: String,
         image: String,

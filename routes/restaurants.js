@@ -31,6 +31,54 @@ var Restaurants = require('../models/restaurant.js');
 
 });*/
 
+router.get('/xxx', function(req, res, next)
+{
+    var date = req.params.date;
+    //setOpeningHoursRestaurant();
+    var weekday = date.getDay();
+    var qTime = date.getHours()*100 + date.getMinutes();
+    /*var now = new Date(),
+        days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sun'];
+        //weekDay = days[now.getDay()];
+
+        //hour = now.getHours(),
+        //qTime =
+        qTime = 1130;
+        weekDay = 'thu';
+    console.log("time: "+qTime);*/
+
+        Restaurants.find({
+            "openingHours.weekday": weekday,
+            "openingHours.start": { "$lte": qTime },
+            "openingHours.end": { "$gte": qTime+15 }
+    }, function(err, data)
+    {
+        if(err) {
+            return next(err);
+        }
+        console.log(data);
+        res.json(data);
+    });
+
+    console.log("done");
+
+});
+
+function setOpeningHoursRestaurant()
+{
+    Restaurants.create({
+            "name": "OpenExpl-3",
+            "openingHours": [
+                {"weekday": 'thu', "start":1130, "end":2145},
+                {"weekday": 'wed', "start":1130, "end":2145}
+            ]
+        },
+        function(err, created) {
+            console.log(created);
+        }
+    );
+}
+
 router.get('/storeImg', function(req, res, next)
 {
     var img = {};
