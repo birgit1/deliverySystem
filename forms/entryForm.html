@@ -76,6 +76,13 @@
     <input type="file" accept="image/*" onchange="angular.element(this).scope().loadFile(event)">
     <img id="image"/>
 
+    <p>
+        opening hours
+        <input type="number" ng-model="openingHour.weekday" placeholder="day">
+        <input type="number" ng-model="openingHour.start" placeholder="start">
+        <input type="number" ng-model="openingHour.end" placeholder="end">
+        <button ng-click="addHours()">add</button>
+    </p>
 
     <button ng-click="submit()">submit</button>
 </div>
@@ -103,6 +110,8 @@
         $scope.menu.fr.ingredients = [];
         $scope.menu.fr.tags = [];
         $scope.menu.fr.category = [];
+        $scope.openingHours = {};
+        $scope.restaurant.openingHours = [];
 
         console.log($scope.restaurant);
 
@@ -225,8 +234,7 @@
             if($scope.menu.en === null)
                 $scope.menu.en = {};
             console.log($scope.menu.en);
-            $scope.menu.en.ingrediets = [];
-            $scope.menu.en.ingredients.push("hello");
+            $scope.menu.en.ingredients.push($scope.enIn);
             console.log("ingredient added");
         };
 
@@ -265,6 +273,12 @@
             if($scope.frCat.length > 0)$scope.menu.fr.category.push($scope.frCat);
             $scope.frCat = "";
             console.log("category added");
+        };
+
+        $scope.addHours = function()
+        {
+            $scope.restaurant.openingHours.push($scope.openingHours);
+            $scope.openingHours = {};
         };
 
         function arrayBufferToBase64( buffer ) {

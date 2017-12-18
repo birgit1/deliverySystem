@@ -11,12 +11,14 @@ var mongoose = require('mongoose');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var restaurants = require('./routes/restaurants');
+
+var restaurant = require('./routes/restaurant');
 var dataAdmin = require('./routes/dataAdmin');
 
 
 // connect to mongodb
 try {
-    var mongoosePromise = mongoose.connect('mongodb://localhost/delivery1', {
+    var mongoosePromise = mongoose.connect('mongodb://localhost/delivery2', {
         useMongoClient: true
     });
 }
@@ -43,6 +45,7 @@ app.use(cors());
 app.use('/', index);
 app.use('/users', users);
 app.use('/restaurants', restaurants);
+app.use('/restaurant', restaurant);
 app.use('/dataAdmin', dataAdmin);
 
 // catch 404 and forward to error handler

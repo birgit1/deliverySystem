@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+<body>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+
+    <h1>Create a menu item</h1>
+
+    <input type="text" ng-model="menu.number" placeholder="number">
+    <input type="text" ng-model="menu.price" placeholder="price">
+
+    <h3 >name</h3>
+    <input type="text" ng-model="menu.name.en" placeholder="name en">
+    <input type="text" ng-model="menu.name.fr" placeholder="name fr">
+
+    <div>
+        <p> English: info</p>
+        <input type="text" ng-model="menu.info.en" placeholder="info">
+        <p> French: info </p>
+        <input type="text" ng-model="menu.info.fr" placeholder="info">
+    </div>
+
+
+    <h3>menu category english</h3>
+    <input type="text" ng-model="cat" placeholder="category">
+    <button ng-click="addCat()">add</button>
+    <h3>menu category french</h3>
+    <input type="text" ng-model="catFR" placeholder="category">
+    <button ng-click="addCatFR()">add</button>
+
+    <h3>menu ingredients english</h3>
+    <input type="text" ng-model="in" placeholder="category">
+    <button ng-click="addIn()">add</button>
+    <h3>menu ingredients french</h3>
+    <input type="text" ng-model="inFR" placeholder="category">
+    <button ng-click="addInFR()">add</button>
+
+    <h3>menu attributes english</h3>
+    <input type="text" ng-model="tag" placeholder="category">
+    <button ng-click="addTag()">add</button>
+    <h3>menu attributes french</h3>
+    <input type="text" ng-model="tagFR" placeholder="category">
+    <button ng-click="addTagFR()">add</button>
+
+    <h3>images</h3>
+    <input type="file" id="file" name="file" />
+    <button ng-click="addPicture()">Add</button>
+
+
+    <button ng-click="submit()">submit</button>
+</div>
+
+
+<script>
+    var app = angular.module('myApp', []);
+
+    app.controller('myCtrl', function($scope, $http)
+    {
+        //
+        $scope.path = "http://localhost:1234";
+        $scope.menu = {};
+        clearMenuForm();
+
+
+        $scope.addPicture = function()
+        {
+            var f = document.getElementById('file').files[0],
+                r = new FileReader();
+
+            r.onloadend = function(e) {
+                var data = e.target.result;
+                $scope.menu.image = (arrayBufferToBase64(data));
+
+                console.log("image added");
+            };
+            r.readAsArrayBuffer(f);
+        };
+
+
+        $scope.submit= function()
+        {
+            console.log("submit");
+            console.log($scope.menu);
+            var res = $http.post($scope.path +'/menu/addMenu', $scope.menu);
+
+            res.then(function (data, status, headers, config) {
+                console.log(data);
+                $scope.menu = {};
+                clearMenuForm();
+            });
+            res.catch(function (data, status, header, config) {
+                console.log("error");
+            });
+        };
+
+
+        function clearMenuForm()
+        {
+            $scope.menu.name = {};
+            $scope.menu.info = {};
+            $scope.menu.desc = [];
+            $scope.menu.category = {};
+            $scope.menu.ingredients = {};
+            $scope.menu.tags = {};
+            $scope.menu.category.en = [];
+            $scope.menu.ingredients.en = [];
+            $scope.menu.tags.en = [];
+            $scope.menu.category.fr = [];
+            $scope.menu.ingredients.fr = [];
+            $scope.menu.tags.fr = [];
+            console.log($scope.menu);
+        }
+
+
+        $scope.cat = null;
+        $scope.addCat = function()
+        {
+            console.log($scope.cat);
+            $scope.restaurant.category.en.push($scope.cat);
+            $scope.cat = null;
+        };
+        $scope.catFR = null;
+        $scope.addCatFR = function()
+        {
+            $scope.restaurant.category.fr.push($scope.catFR);
+            $scope.catFR = null;
+        };
+
+        function arrayBufferToBase64( buffer ) {
+            var binary = '';
+            var bytes = new Uint8Array( buffer );
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode( bytes[ i ] );
+            }
+            return window.btoa( binary );
+        }
+    });
+</script>
+
+</body>
+</html>
