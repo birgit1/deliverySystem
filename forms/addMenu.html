@@ -7,6 +7,12 @@
 
     <h1>Create a menu item</h1>
 
+    <h3>Restaurant</h3>
+    <div ng-repeat="r in restaurants">
+       <input type="radio" ng-model="$parent.menu.restaurantId" value="{{r._id}}" name="{{r.name}}">
+        {{r.name}}
+    </div>
+
     <input type="text" ng-model="menu.number" placeholder="number">
     <input type="text" ng-model="menu.price" placeholder="price">
 
@@ -30,7 +36,7 @@
     <button ng-click="addCatFR()">add</button>
 
     <h3>menu ingredients english</h3>
-    <input type="text" ng-model="in" placeholder="category">
+    <input type="text" ng-model="ing" placeholder="category">
     <button ng-click="addIn()">add</button>
     <h3>menu ingredients french</h3>
     <input type="text" ng-model="inFR" placeholder="category">
@@ -117,14 +123,40 @@
         $scope.addCat = function()
         {
             console.log($scope.cat);
-            $scope.restaurant.category.en.push($scope.cat);
+            $scope.menu.category.en.push($scope.cat);
             $scope.cat = null;
         };
         $scope.catFR = null;
         $scope.addCatFR = function()
         {
-            $scope.restaurant.category.fr.push($scope.catFR);
+            $scope.menu.category.fr.push($scope.catFR);
             $scope.catFR = null;
+        };
+
+        $scope.ing = null;
+        $scope.addIn = function()
+        {
+            $scope.menu.ingredients.en.push($scope.ing);
+            $scope.ing = null;
+        };
+        $scope.inFR = null;
+        $scope.addInFR = function()
+        {
+            $scope.menu.ingredients.fr.push($scope.inFR);
+            $scope.inFR = null;
+        };
+
+        $scope.tags = null;
+        $scope.addTags = function()
+        {
+            $scope.menu.tags.en.push($scope.tags);
+            $scope.tags = null;
+        };
+        $scope.tagsFR = null;
+        $scope.addTagsFR = function()
+        {
+            $scope.menu.tags.fr.push($scope.tagsFR);
+            $scope.tagsFR = null;
         };
 
         function arrayBufferToBase64( buffer ) {
@@ -136,6 +168,17 @@
             }
             return window.btoa( binary );
         }
+
+        $http({
+            method : "GET",
+            url : $scope.path+"/restaurant/getRestaurants",
+            params: {sendImage: false}
+        }).then(function onSuccess(response) {
+            $scope.restaurants = response.data;
+        }, function onError(response) {
+            console.log("error");
+        });
+        console.log($scope.restaurants);
     });
 </script>
 

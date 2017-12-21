@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var menuSchema = new mongoose.Schema({
-    restaurantId: _id,
+    restaurantId: mongoose.Schema.Types.ObjectId,
     number: String,
     price: Number,
     image: String,

@@ -32,7 +32,7 @@ router.get('/restaurants', function(req, res, next)
 // get categories of all/specific food
 router.get('/getFoodCategories', function(req, res, next)
 {
-    Menu.distinct("lng.category", function(err, data)
+    Menu.distinct("category.en", function(err, data)
     {
         if(err) {
             return next(err);
@@ -44,7 +44,7 @@ router.get('/getFoodCategories', function(req, res, next)
 // get attributes of all/specific food
 router.get('/getFoodAttributes', function(req, res, next)
 {
-    Menu.distinct("lng.tags", function(err, data)
+    Menu.distinct("tags.en", function(err, data)
     {
         if(err) {
             return next(err);
@@ -56,13 +56,22 @@ router.get('/getFoodAttributes', function(req, res, next)
 // get all menu without images only
 router.get('/getMenu', function(req, res, next)
 {
-    Menu.find(function(err, data)
+    var query = null;
+    if(req.query.rids !== undefined)
+    {
+        var obj_ids = rids.map(function (id) {
+            return ObjectId(id);
+        });
+        console.log("look for id: " + req.query.rids);
+        query = {restaurantId: {$in: obj_ids}};
+    }
+    Menu.find(query, function(err, data)
     {
         if(err) {
             return next(err);
         }
         for (var i = 0; i < data.length; i++)
-            delete data[i].image;
+            data[i].image = undefined;
 
         res.send(data);
     });
@@ -83,7 +92,7 @@ router.post('/addMenu', function(req, res, next)
 // get specific menu item by id
 router.get('/:id', function(req, res, next)
 {
-    Menu.findById(req.params.id, function(err, data)
+    Menu.findById(req.query.id, function(err, data)
     {
         if(err) return next(err);
         res.json(data);
