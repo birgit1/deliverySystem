@@ -56,7 +56,7 @@ router.get('/getFoodAttributes', function(req, res, next)
 // get all menu without images only
 router.get('/getMenu', function(req, res, next)
 {
-    var query = null;
+    /*var query = null;
     if(req.query.rids !== undefined)
     {
         var obj_ids = rids.map(function (id) {
@@ -65,6 +65,10 @@ router.get('/getMenu', function(req, res, next)
         console.log("look for id: " + req.query.rids);
         query = {restaurantId: {$in: obj_ids}};
     }
+    if( res.query.categories !== undefined)
+    {
+        query = {category}
+    }*/
     Menu.find(query, function(err, data)
     {
         if(err) {

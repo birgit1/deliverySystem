@@ -4,7 +4,9 @@ var restaurantSchema = new mongoose.Schema({
     name: String,
     address: {street: String, postalCode: String, city:String},
     info: {en: String, fr:String},
-    category: {en: [String], fr:[String]},
+    phone: Number,
+    email: String,
+    foodCategory: [mongoose.Schema.Types.ObjectId],
 
     openingHours: [{
         weekday: Number,
@@ -12,6 +14,7 @@ var restaurantSchema = new mongoose.Schema({
         end: Number
     }],
     images: [String],
+    logo: String,
     updatedAt: {type: Date, default: Date.now}
 });
 

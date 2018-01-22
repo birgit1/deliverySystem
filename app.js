@@ -13,6 +13,9 @@ var users = require('./routes/users');
 var menu = require('./routes/menu');
 var restaurant = require('./routes/restaurant');
 var dataAdmin = require('./routes/dataAdmin');
+var contact = require('./routes/contact');
+var order = require('./routes/order');
+var foodCategory = require('./routes/foodCategory');
 
 
 // connect to mongodb
@@ -46,6 +49,9 @@ app.use('/users', users);
 app.use('/menu', menu);
 app.use('/restaurant', restaurant);
 app.use('/dataAdmin', dataAdmin);
+app.use('/contact', contact);
+app.use('/order', order);
+app.use('/foodCategory', foodCategory);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
