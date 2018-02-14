@@ -20,7 +20,7 @@ var foodCategory = require('./routes/foodCategory');
 
 // connect to mongodb
 try {
-    var mongoosePromise = mongoose.connect('mongodb://localhost/delivery2', {
+    var mongoosePromise = mongoose.connect('mongodb://localhost/delivery3', {
         useMongoClient: true
     });
 }

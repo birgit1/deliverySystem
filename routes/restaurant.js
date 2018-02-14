@@ -4,6 +4,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var fs = require('fs');
 var Restaurants = require('../models/restaurant.js');
+var FoodStyles = require('../models/foodCategory.js');
 
 
 // get all restaurants open at specific time
@@ -27,29 +28,76 @@ router.get('/getOpenRestaurants', function(req, res, next)
     });
 });
 
+router.get('getRestaurantByFoodStyles', function(req, res, next)
+{
+
+});
+
 
 // get categories of all/specific restaurants
 router.get('/getRestaurantCategories', function(req, res, next)
 {
-    console.log("1");
+    console.log("YES");
+    var foods = req.query.foods;
+
+    console.log(foods);
+
+    var foodObjs = null;
     var query = null;
-    if(req.query.ids !== undefined)
+    if(!(foods ===null || foods === undefined))
     {
-        var obj_ids = ids.map(function (id) {
-            return ObjectId(id);
-        });
-        console.log("look for id: " + req.params.id);
-        query = {_id: {$in: obj_ids}};
+        foodObjs = [];
+        if (!Array.isArray(foods)) {
+            foodObjs.push(mongoose.Types.ObjectId(foods));
+        }
+        else {
+            foodObjs = foods.map(function (id) {
+                return mongoose.Types.ObjectId(id);
+            });
+        }
+        query = {"foodCategory": {$in: foodObjs}};
     }
-    console.log(query);
-    Restaurants.distinct("category.en", query, function(err, data)
-    {
-        if(err) {
+
+
+    try{
+    Restaurants.find(query, function(err, data) {
+        if (err) {
+            console.log(err);
             return next(err);
         }
+        console.log("YES");
         console.log(data);
         res.json(data);
+        /*Restaurants.find(function(err, restaurants)
+        {
+            if(err) {
+                return next(err);
+            }
+            console.log(restaurants);
+            console.log(selectedRestaurants);
+            var result = [];
+            for(var i=0; i<restaurants.length; i++)
+            {
+                if(selectedRestaurants.indexOf(restaurants[i]) >= 0)
+                {
+                    console.log(i+" in");
+                    result.push(restaurants[i]);
+                }
+                else
+                {
+                    console.log(i+ " out");
+                }
+            }
+            res.json(result);
+        });*/
     });
+    }
+    catch( e)
+        {
+            console.log("database error");
+            console.log(e);
+            rexs.json("DB error");
+        }
 });
 
 
