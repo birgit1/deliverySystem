@@ -6,7 +6,7 @@ var Menu = require('../models/menu.js');
 
 
 // get all restaurants open at specific time
-router.get('/restaurants', function(req, res, next)
+router.get('/menu', function(req, res, next)
 {
     var query = null;
     if(req.params.ids !== undefined)
@@ -54,21 +54,10 @@ router.get('/getFoodAttributes', function(req, res, next)
 });
 
 // get all menu without images only
-router.get('/getMenu', function(req, res, next)
+router.get('/getMenuForRestaurant', function(req, res, next)
 {
-    /*var query = null;
-    if(req.query.rids !== undefined)
-    {
-        var obj_ids = rids.map(function (id) {
-            return ObjectId(id);
-        });
-        console.log("look for id: " + req.query.rids);
-        query = {restaurantId: {$in: obj_ids}};
-    }
-    if( res.query.categories !== undefined)
-    {
-        query = {category}
-    }*/
+    var restaurant = mongoose.Types.ObjectId(req.query.restaurant);
+    var query = {"restaurantId": restaurant};
     Menu.find(query, function(err, data)
     {
         if(err) {
@@ -77,7 +66,7 @@ router.get('/getMenu', function(req, res, next)
         for (var i = 0; i < data.length; i++)
             data[i].image = undefined;
 
-        res.send(data);
+        res.json(data);
     });
 });
 
